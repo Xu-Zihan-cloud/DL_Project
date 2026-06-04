@@ -1,0 +1,25 @@
+name: decision_diffuser
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pytorch
+  - cpuonly
+  - hydra-core
+  - omegaconf
+  - numpy<2.0
+  - pandas
+  - tqdm
+  - matplotlib
+  - wandb
+  - pip:
+      - gym==0.23.1
+      - mujoco-py<2.2,>=2.1
+      - d4rl @ git+https://github.com/Farama-Foundation/d4rl@master
+      - CleanDiffuser
+      - Cython<3.0
+      - imageio
+      - scikit-learn

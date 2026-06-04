@@ -1,0 +1,68 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.prototxt
+*.pickle
+
+# --- Environments & Packages ---
+.conda/
+env/
+venv/
+.venv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- ML Research Artifacts (Weights & Checkpoints) ---
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.weights
+checkpoints/
+models/trained/
+results/
+
+# --- Data & MuJoCo ---
+*.hdf5
+*.mjb
+data/
+datasets/
+.mujoco/
+mujoco_cache/
+*.log
+
+# --- Hydra & Logging ---
+outputs/
+multirun/
+wandb/
+tensorboard/
+logs/
+
+# --- IDEs & OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.env
+.history/
