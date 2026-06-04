@@ -18,10 +18,8 @@ class DecisionDiffuserWrapper(nn.Module):
         # cleandiffuser setup (Simplified representation for baseline)
         self.model = DiffusionModel(
             nn_diffusion=MlpNNDiffusion(
-                d_in=input_dim, 
-                d_out=input_dim, 
-                d_model=model_config.nn_diffusion.d_model,
-                n_layers=model_config.nn_diffusion.n_layers
+                x_dim=input_dim, 
+                hidden_dims=[model_config.nn_diffusion.d_model] * model_config.nn_diffusion.n_layers
             ),
             fix_mask=None, # DD usually doesn't fix mask for full trajectory
             loss_type="l2",
