@@ -22,8 +22,7 @@ class DecisionDiffuserWrapper(nn.Module):
                 hidden_dims=[model_config.nn_diffusion.d_model] * model_config.nn_diffusion.n_layers
             ),
             fix_mask=None, # DD usually doesn't fix mask for full trajectory
-            diffusion_steps=model_config.diffusion.steps,
-            beta_schedule=model_config.diffusion.beta_schedule
+            diffusion_steps=model_config.diffusion.steps
         )
 
     def forward(self, trajectories, conditions):
