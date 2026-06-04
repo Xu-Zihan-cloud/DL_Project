@@ -16,11 +16,13 @@ class DecisionDiffuserWrapper(nn.Module):
         input_dim = obs_dim + action_dim
         
         # cleandiffuser setup (Simplified representation for baseline)
+        self.nn_diffusion = MlpNNDiffusion(
+            x_dim=input_dim, 
+            hidden_dims=[model_config.nn_diffusion.d_model] * model_config.nn_diffusion.n_layers
+        )
+        
         self.model = DiffusionModel(
-            nn_diffusion=MlpNNDiffusion(
-                x_dim=input_dim, 
-                hidden_dims=[model_config.nn_diffusion.d_model] * model_config.nn_diffusion.n_layers
-            ),
+            nn_diffusion=self.nn_diffusion,
             fix_mask=None, # DD usually doesn't fix mask for full trajectory
             diffusion_steps=model_config.diffusion.steps
         )
