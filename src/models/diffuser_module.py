@@ -30,7 +30,7 @@ class DecisionDiffuserWrapper(nn.Module):
     def forward(self, trajectories, conditions):
         B, T, D = trajectories.shape
         flat_trajectories = trajectories.view(B, -1)
-        return self.model.update(flat_trajectories, conditions)
+        return self.model.loss(flat_trajectories, conditions)
 
     def sample(self, conditions, n_samples=1):
         # Initial sampling using DDPM baseline
