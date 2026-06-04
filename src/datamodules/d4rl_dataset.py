@@ -45,7 +45,7 @@ class D4RLTrajectoryDataset(Dataset):
         actions = self.actions[start:end]
         returns = self.returns_to_go[start:end]
         
-        # Concatenate for CleanDiffuser format [obs, action]
+        # Concatenate for cleandiffuser format [obs, action]
         trajectories = np.concatenate([obs, actions], axis=-1)
         
         return {

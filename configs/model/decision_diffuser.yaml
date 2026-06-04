@@ -1,8 +1,8 @@
 name: DecisionDiffuser
 nn_diffusion: 
-  _target_: CleanDiffuser.nn_diffusion.MLP
+  _target_: cleandiffuser.nn_diffusion.MLP
   # Placeholder for MLP architecture
-  # actual CleanDiffuser model will be instantiated in the wrapper
+  # actual cleandiffuser model will be instantiated in the wrapper
   d_in: 14 # obs_dim + action_dim (adjusted in code)
   d_out: 14
   d_model: 256

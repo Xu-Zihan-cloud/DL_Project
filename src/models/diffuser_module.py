@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from CleanDiffuser.models.diffusion import DiffusionModel
-from CleanDiffuser.nn_diffusion import MLP, DiT
+from cleandiffuser.diffusion import DiffusionModel
+from cleandiffuser.nn_diffusion import MLP, DiT
 
 class DecisionDiffuserWrapper(nn.Module):
     def __init__(self, obs_dim, action_dim, horizon, model_config):
@@ -10,11 +10,11 @@ class DecisionDiffuserWrapper(nn.Module):
         self.action_dim = action_dim
         self.horizon = horizon
         
-        # In CleanDiffuser, Decision Diffuser often uses a U-Net or MLP
+        # In cleandiffuser, Decision Diffuser often uses a U-Net or MLP
         # Here we follow the core DD implementation logic
         input_dim = obs_dim + action_dim
         
-        # CleanDiffuser setup (Simplified representation for baseline)
+        # cleandiffuser setup (Simplified representation for baseline)
         self.model = DiffusionModel(
             nn_diffusion=MLP(
                 d_in=input_dim, 

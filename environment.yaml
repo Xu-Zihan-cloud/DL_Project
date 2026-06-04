@@ -19,7 +19,7 @@ dependencies:
       - gym==0.23.1
       - mujoco-py<2.2,>=2.1
       - d4rl @ git+https://github.com/Farama-Foundation/d4rl@master
-      - CleanDiffuser
+      - cleandiffuser
       - Cython<3.0
       - imageio
       - scikit-learn
