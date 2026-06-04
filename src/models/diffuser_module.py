@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 from cleandiffuser.diffusion import DiffusionModel
-from cleandiffuser.nn_diffusion import MLP, DiT
+from cleandiffuser.nn_diffusion.mlps import MlpNNDiffusion
+from cleandiffuser.nn_diffusion.dit import DiT1d
 
 class DecisionDiffuserWrapper(nn.Module):
     def __init__(self, obs_dim, action_dim, horizon, model_config):
@@ -16,7 +17,7 @@ class DecisionDiffuserWrapper(nn.Module):
         
         # cleandiffuser setup (Simplified representation for baseline)
         self.model = DiffusionModel(
-            nn_diffusion=MLP(
+            nn_diffusion=MlpNNDiffusion(
                 d_in=input_dim, 
                 d_out=input_dim, 
                 d_model=model_config.nn_diffusion.d_model,
