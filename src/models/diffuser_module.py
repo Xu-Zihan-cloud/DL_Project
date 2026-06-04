@@ -13,7 +13,7 @@ class DecisionDiffuserWrapper(nn.Module):
         
         # In cleandiffuser, Decision Diffuser often uses a U-Net or MLP
         # Here we follow the core DD implementation logic
-        input_dim = obs_dim + action_dim
+        input_dim = horizon * (obs_dim + action_dim)
         
         # cleandiffuser setup (Simplified representation for baseline)
         self.nn_diffusion = MlpNNDiffusion(
@@ -28,8 +28,11 @@ class DecisionDiffuserWrapper(nn.Module):
         )
 
     def forward(self, trajectories, conditions):
-        return self.model.update(trajectories, conditions)
+        B, T, D = trajectories.shape
+        flat_trajectories = trajectories.view(B, -1)
+        return self.model.update(flat_trajectories, conditions)
 
     def sample(self, conditions, n_samples=1):
         # Initial sampling using DDPM baseline
-        return self.model.sample(conditions, n_samples=n_samples)
+        flat_samples = self.model.sample(conditions, n_samples=n_samples)
+        return flat_samples.view(flat_samples.shape[0], self.horizon, self.obs_dim + self.action_dim)
