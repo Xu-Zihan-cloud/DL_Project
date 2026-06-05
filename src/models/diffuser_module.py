@@ -7,28 +7,53 @@ class DecisionDiffuserWrapper(nn.Module):
     def __init__(self, obs_dim, action_dim, horizon, model_config):
         super().__init__()
         self.obs_dim, self.action_dim, self.horizon = obs_dim, action_dim, horizon
-        input_dim = horizon * (obs_dim + action_dim)
         
-        # Use a standard MLP backbone
+        # Augmented State Approach:
+        # We append the RTG condition (dim=1) to the end of the flattened trajectory.
+        # This makes the model API-agnostic regarding conditioning.
+        self.traj_dim = horizon * (obs_dim + action_dim)
+        self.x_dim = self.traj_dim + 1 
+        
+        # 1. Setup unconditional MLP backbone
         self.nn_diffusion = MlpNNDiffusion(
-            x_dim=input_dim, 
-            hidden_dims=[512, 512, 512] # Increased capacity for full trajectory MLP
+            x_dim=self.x_dim, 
+            hidden_dims=[512, 512, 512]
         )
         
+        # 2. Create fix_mask to protect the RTG dimension from diffusion
+        # 1 means fixed (known), 0 means diffused (unknown)
+        fix_mask = torch.zeros(self.x_dim)
+        fix_mask[-1] = 1.0
+        self.register_buffer("fix_mask", fix_mask)
+        
+        # 3. Setup SDE with fix_mask
         self.model = DiscreteDiffusionSDE(
             nn_diffusion=self.nn_diffusion,
-            fix_mask=None,
+            fix_mask=self.fix_mask,
             diffusion_steps=model_config.diffusion.steps
         )
 
     def forward(self, trajectories, conditions):
-        B, T, D = trajectories.shape
-        # Flatten [B, T, D] to [B, T*D] for MLP backbone
+        # trajectories: [B, T, D], conditions: [B, 1]
+        B = trajectories.shape[0]
         flat_trajectories = trajectories.view(B, -1)
-        return self.model.loss(flat_trajectories, conditions)
+        # Augment: [B, T*D + 1]
+        x0 = torch.cat([flat_trajectories, conditions], dim=-1)
+        return self.model.loss(x0)
 
     def sample(self, conditions, n_samples=1):
-        # Samples are flat [B, T*D]
-        flat_samples = self.model.sample(conditions, n_samples=n_samples)
-        # Unflatten to [B, T, D]
-        return flat_samples.view(flat_samples.shape[0], self.horizon, self.obs_dim + self.action_dim)
+        # conditions (target_rtg): [B, 1]
+        B = conditions.shape[0]
+        device = conditions.device
+        
+        # Create prior: [B, T*D + 1]
+        # Trajectory part is noise, RTG part is the target condition
+        noise = torch.randn((B, self.traj_dim), device=device)
+        prior = torch.cat([noise, conditions], dim=-1)
+        
+        # Sample using the prior and fix_mask (masked dims stay fixed to prior values)
+        flat_samples = self.model.sample(prior=prior)
+        
+        # Strip the RTG dimension and unflatten
+        traj_samples = flat_samples[:, :self.traj_dim]
+        return traj_samples.view(B, self.horizon, self.obs_dim + self.action_dim)
