@@ -9,10 +9,9 @@ class DecisionDiffuserWrapper(nn.Module):
         self.obs_dim, self.action_dim, self.horizon = obs_dim, action_dim, horizon
         input_dim = horizon * (obs_dim + action_dim)
         
-        # Explicitly define cond_dim=1 for RTG conditioning
+        # Use a standard MLP backbone
         self.nn_diffusion = MlpNNDiffusion(
             x_dim=input_dim, 
-            cond_dim=1, 
             hidden_dims=[512, 512, 512] # Increased capacity for full trajectory MLP
         )
         
