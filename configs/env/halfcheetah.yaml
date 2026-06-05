@@ -1,0 +1,5 @@
+name: halfcheetah-medium-expert-v2
+obs_dim: 17
+action_dim: 6
+horizon: 20
+target_rtg: 12.0

@@ -12,7 +12,7 @@ coverage.xml
 
 # --- Environments & Packages ---
 .conda/
-env/
+/env/
 venv/
 .venv/
 build/

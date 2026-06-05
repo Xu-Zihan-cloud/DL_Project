@@ -1,0 +1,5 @@
+name: hopper-medium-expert-v2
+obs_dim: 11
+action_dim: 3
+horizon: 20
+target_rtg: 3.6
