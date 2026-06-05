@@ -1,22 +1,27 @@
 #!/bin/bash
 
-# Configuration
-ENV_NAME="decision_diffuser"
-CONDA_BASE=$(conda info --base)
-source "$CONDA_BASE/etc/profile.d/conda.sh"
+# 1. 强固物理仿真与渲染防线（脚本内多写一次，双重保险）
+export LD_LIBRARY_PATH=/home/zihan_xu/.mujoco/mujoco210/bin:$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
+export MUJOCO_GL="osmesa"
+export PYOPENGL_PLATFORM="osmesa"
 
-# Activate environment
-conda activate $ENV_NAME
+# 创建权重输出目录（防止代码里没创建导致保存报错）
+mkdir -p outputs/weights
 
-# Performance environment variables for AMD EPYC
-export OMP_NUM_THREADS=32
-export MKL_NUM_THREADS=32
-export KMP_AFFINITY=granularity=fine,compact,1,0
+echo "========================================================"
+echo "🚀 [1/2] 开始轰鸣：Hopper-v2 满血版训练正式点火！"
+echo "========================================================"
+numactl --cpunodebind=0 --membind=0 python train.py \
+    env=hopper \
+    epochs=200 \
+    train_batch_size=32
 
-# Execution with NUMA control
-# Confining to socket 0 (first 256 threads) but further restricted to 32 logical cores by optimizer
-echo "Starting Baseline Training on Hopper-v2..."
-numactl --cpunodebind=0 --membind=0 python train.py env=hopper
+echo "========================================================"
+echo "🚀 [2/2] 阵地转移：HalfCheetah-v2 满血版训练无缝接力！"
+echo "========================================================"
+numactl --cpunodebind=0 --membind=0 python train.py \
+    env=halfcheetah \
+    epochs=200 \
+    train_batch_size=32
 
-echo "Starting Baseline Training on HalfCheetah-v2..."
-numactl --cpunodebind=0 --membind=0 python train.py env=halfcheetah
+echo "🎉 全线大获全胜！所有环境训练已全部收网！"
