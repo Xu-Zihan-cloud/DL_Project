@@ -52,7 +52,8 @@ class DecisionDiffuserWrapper(nn.Module):
         prior = torch.cat([noise, conditions], dim=-1)
         
         # Sample using the prior and fix_mask (masked dims stay fixed to prior values)
-        flat_samples = self.model.sample(prior=prior)
+        # Note: cleandiffuser.sample returns (samples, log_probs)
+        flat_samples, _ = self.model.sample(prior=prior)
         
         # Strip the RTG dimension and unflatten
         traj_samples = flat_samples[:, :self.traj_dim]
