@@ -115,7 +115,9 @@ def train(cfg: DictConfig):
         
         # 7. Periodic Evaluation & Persistence
         if epoch % cfg.eval_freq == 0 or epoch == cfg.epochs - 1:
-            avg_reward, norm_score = evaluate(model, dataset, cfg.env.name, cfg.env.target_rtg)
+            # Robustly fetch target_rtg, default to 1.0 if missing
+            target_rtg = cfg.env.get("target_rtg", 1.0)
+            avg_reward, norm_score = evaluate(model, dataset, cfg.env.name, target_rtg)
             logger.info(f"Epoch {epoch} | Loss: {avg_loss:.6f} | Reward: {avg_reward:.2f} | Score: {norm_score:.2f}")
             
             # Save history to CSV for standardized reporting
